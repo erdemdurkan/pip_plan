@@ -3,19 +3,279 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Stok Plan Dönüştürücü</title>
+  <title>PIP Plan Oluşturucu</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(120deg, #6a8dff, #a084ee, #7f53ac, #647dee);
+      background-size: 400% 400%;
+      animation: gradientBG 12s ease infinite;
+    }
+
+    @keyframes gradientBG {
+      0% {
+        background-position: 0% 50%;
+      }
+
+      50% {
+        background-position: 100% 50%;
+      }
+
+      100% {
+        background-position: 0% 50%;
+      }
+    }
+
+    .card {
+      max-width: 480px;
+      margin: 60px auto;
+      background: #fff;
+      border-radius: 22px;
+      box-shadow: 0 8px 32px rgba(80, 80, 160, 0.15);
+      padding: 38px 36px 32px 36px;
+      text-align: center;
+      opacity: 0;
+      transform: translateY(40px) scale(0.98);
+      animation: cardIn 1s cubic-bezier(.68, -0.55, .27, 1.55) 0.3s forwards;
+    }
+
+    @keyframes cardIn {
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .badge {
+      display: inline-block;
+      background: linear-gradient(90deg, #7f53ac, #a084ee);
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 500;
+      border-radius: 8px;
+      padding: 5px 16px;
+      margin-bottom: 18px;
+      opacity: 0;
+      transform: translateY(10px);
+      animation: fadeUp 0.7s 0.5s forwards;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #7f53ac;
+      letter-spacing: 0.5px;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.8s 0.7s forwards;
+      margin: 0 0 10px 0;
+    }
+
+    h2 {
+      font-size: 2.1rem;
+      font-weight: 700;
+      color: #7f53ac;
+      letter-spacing: 0.5px;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.8s 0.7s forwards;
+      margin: 0 0 10px 0;
+    }
+
+    @keyframes fadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card p {
+      color: #6b7280;
+      margin-bottom: 22px;
+      font-size: 1.05rem;
+    }
+
+    .upload-box {
+      border: 2px dashed #a084ee;
+      border-radius: 14px;
+      background: #f7f8fd;
+      padding: 24px 20px;
+      margin: 18px 0;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      cursor: pointer;
+      position: relative;
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.8s 1s forwards;
+    }
+
+    .upload-box:hover {
+      box-shadow: 0 8px 25px rgba(160, 132, 238, 0.15);
+      border-color: #7f53ac;
+      background: #f0f4ff;
+      transform: translateY(-2px);
+    }
+
+    .upload-box:nth-child(2) {
+      animation-delay: 1.2s;
+    }
+
+    .upload-box input[type="file"] {
+      display: none;
+    }
+
+    .upload-label {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #7f53ac;
+      font-weight: 500;
+      font-size: 1.05rem;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .upload-label:hover {
+      transform: scale(1.02);
+    }
+
+    .upload-icon {
+      width: 48px;
+      height: 48px;
+      margin-bottom: 12px;
+      padding: 12px;
+      background: linear-gradient(135deg, #a084ee, #7f53ac);
+      border-radius: 50%;
+      color: white;
+      transition: transform 0.3s;
+    }
+
+    .upload-box:hover .upload-icon {
+      transform: rotateY(180deg) scale(1.1);
+    }
+
+    .upload-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .upload-subtitle {
+      font-size: 0.9rem;
+      color: #888;
+      opacity: 0.8;
+    }
+
+    .button {
+      background: linear-gradient(135deg, #7f53ac, #647dee, #6a8dff);
+      background-size: 200% 200%;
+      color: #fff;
+      border: none;
+      border-radius: 12px;
+      padding: 16px 0;
+      width: 100%;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-top: 28px;
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(100, 125, 222, 0.15);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      opacity: 0;
+      transform: translateY(20px);
+      animation: fadeUp 0.8s 1.5s forwards;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .button:hover {
+      background-position: 100% 0;
+      transform: translateY(-2px) scale(1.02);
+      box-shadow: 0 8px 25px rgba(100, 125, 222, 0.25);
+    }
+
+    .button:active {
+      transform: translateY(0) scale(0.98);
+    }
+
+    .button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s;
+    }
+
+    .button:hover::before {
+      left: 100%;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      .card {
+        max-width: 98vw;
+        padding: 18px 4vw 18px 4vw;
+      }
+    }
+  </style>
 </head>
 
 <body>
-  <input type="file" id="file1" />
-  <input type="file" id="file2" />
-  <button onclick="convert()">Dönüştür</button>
+  <div class="card">
+    <div class="badge">✨ Excel İşleyici</div>
+    <h1>PIP Plan Hesaplama Aracı</h1>
+    <p>Excel dosyalarınızı yükleyip otomatik hesaplama yapın</p>
 
+    <div class="upload-section">
+      <div class="upload-box" id="upload1" onclick="document.getElementById('file1').click()">
+        <label class="upload-label">
+          <div class="upload-icon">📁</div>
+          <div class="upload-text">EX_STOK Dosyasını Yükle</div>
+          <div class="upload-hint">Dosya seçmek için tıklayın (.xlsx, .xls)</div>
+          <div class="file-name" id="filename1"
+            style="display: none; margin-top: 8px; color: #10b981; font-weight: 600; font-size: 0.9rem;"></div>
+        </label>
+        <input type="file" id="file1" accept=".xlsx,.xls" onchange="showSelectedFile(this, 'filename1', 'upload1')"
+          style="display: none;">
+      </div>
+
+      <div class="upload-box" id="upload2" onclick="document.getElementById('file2').click()">
+        <label class="upload-label">
+          <div class="upload-icon">📁</div>
+          <div class="upload-text">İndirdiğiniz Montaj Plan Dosyasını Yükle</div>
+          <div class="upload-hint">Dosya seçmek için tıklayın (.xlsx, .xlsm)</div>
+          <div class="file-name" id="filename2"
+            style="display: none; margin-top: 8px; color: #10b981; font-weight: 600; font-size: 0.9rem;"></div>
+        </label>
+        <input type="file" id="file2" accept=".xlsx,.xlsm" onchange="showSelectedFile(this, 'filename2', 'upload2')"
+          style="display: none;">
+      </div>
+
+      <button type="button" class="button" onclick="convert()">🚀 İŞLEMİ BAŞLAT</button>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
   <script>
-    function toText(val) {
-      return String(val || '').trim().toUpperCase();
+    function showSelectedFile(input, filenameId, uploadBoxId) {
+      const filenameDiv = document.getElementById(filenameId);
+      const uploadBox = document.getElementById(uploadBoxId);
+      const uploadHint = uploadBox.querySelector('.upload-hint');
+
+      if (input.files && input.files[0]) {
+        const fileName = input.files[0].name;
+        filenameDiv.textContent = `✅ ${fileName}`;
+        filenameDiv.style.display = 'block';
+        uploadHint.style.display = 'none';
+        uploadBox.style.borderColor = '#10b981';
+        uploadBox.style.backgroundColor = '#f0fdf4';
+      }
     }
 
     async function readFile(file) {
@@ -29,6 +289,10 @@
         reader.onerror = err => reject(err);
         reader.readAsArrayBuffer(file);
       });
+    }
+
+    function toText(val) {
+      return String(val || '').trim().toUpperCase();
     }
 
     function convert() {
@@ -47,7 +311,7 @@
         const stoklar = {};
         stokSheet.forEach(row => {
           const nokta = toText(row["SORGULAMA_NOKTASI"]);
-          if (nokta === "MONTAJ" || nokta === "AYAR") {
+          if (nokta === "DIZGI" || nokta === "YEDEK") {
             const kod = toText(row["SASI_KODU_3"]);
             const adet = Number(row["ADET"]) || 0;
             stoklar[kod] = (stoklar[kod] || 0) + adet;
@@ -109,10 +373,7 @@
 
         const wbOut = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wbOut, ws, "q1");
-        XLSX.writeFile(wbOut, "Guncel_PLAN.xlsx");
+        XLSX.writeFile(wbOut, "PIP_PLAN.xlsx");
       });
     }
   </script>
-</body>
-
-</html>
