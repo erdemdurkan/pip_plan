@@ -1,2 +1,2 @@
-# stok_gecici
-Stok_Gecici
+# pip_plan
+Pip_Plan
