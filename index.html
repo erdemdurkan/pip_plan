@@ -1,379 +1,425 @@
+
 <!DOCTYPE html>
-<html lang="tr">
-
+<html>
 <head>
-  <meta charset="UTF-8">
-  <title>PIP Plan Oluşturucu</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-  <style>
-    body {
-      font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
-      min-height: 100vh;
-      margin: 0;
-      padding: 0;
-      background: linear-gradient(120deg, #6a8dff, #a084ee, #7f53ac, #647dee);
-      background-size: 400% 400%;
-      animation: gradientBG 12s ease infinite;
-    }
+<meta charset="UTF-8">
+<title>Montaj Program Hesaplayıcı</title>
 
-    @keyframes gradientBG {
-      0% {
-        background-position: 0% 50%;
-      }
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style/dist/xlsx.bundle.js"></script>
 
-      50% {
-        background-position: 100% 50%;
-      }
+<style>
 
-      100% {
-        background-position: 0% 50%;
-      }
-    }
+*{box-sizing:border-box;}
 
-    .card {
-      max-width: 480px;
-      margin: 60px auto;
-      background: #fff;
-      border-radius: 22px;
-      box-shadow: 0 8px 32px rgba(80, 80, 160, 0.15);
-      padding: 38px 36px 32px 36px;
-      text-align: center;
-      opacity: 0;
-      transform: translateY(40px) scale(0.98);
-      animation: cardIn 1s cubic-bezier(.68, -0.55, .27, 1.55) 0.3s forwards;
-    }
+body{
+font-family:Segoe UI, Arial, sans-serif;
+margin:0;
+min-height:100vh;
+background:url("beko.png") no-repeat center center fixed;
+background-size:cover;
+display:flex;
+align-items:center;
+padding-left:60px;
+}
 
-    @keyframes cardIn {
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
-    }
+/* PANEL */
 
-    .badge {
-      display: inline-block;
-      background: linear-gradient(90deg, #7f53ac, #a084ee);
-      color: #fff;
-      font-size: 0.95rem;
-      font-weight: 500;
-      border-radius: 8px;
-      padding: 5px 16px;
-      margin-bottom: 18px;
-      opacity: 0;
-      transform: translateY(10px);
-      animation: fadeUp 0.7s 0.5s forwards;
-    }
+.panel{
+background:rgba(0,0,0,0.65);
+padding:32px;
+border-radius:14px;
+width:640px;
+color:white;
+backdrop-filter:blur(10px);
+box-shadow:0 15px 45px rgba(0,0,0,0.55);
+animation:fadeIn .6s ease;
+}
 
-    h1 {
-      font-size: 2.5rem;
-      font-weight: 700;
-      color: #7f53ac;
-      letter-spacing: 0.5px;
-      opacity: 0;
-      transform: translateY(20px);
-      animation: fadeUp 0.8s 0.7s forwards;
-      margin: 0 0 10px 0;
-    }
+/* HEADER */
 
-    h2 {
-      font-size: 2.1rem;
-      font-weight: 700;
-      color: #7f53ac;
-      letter-spacing: 0.5px;
-      opacity: 0;
-      transform: translateY(20px);
-      animation: fadeUp 0.8s 0.7s forwards;
-      margin: 0 0 10px 0;
-    }
+.header{
+display:flex;
+align-items:center;
+gap:12px;
+margin-bottom:18px;
+}
 
-    @keyframes fadeUp {
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
+.header-icon{
+width:42px;
+height:42px;
+border-radius:10px;
+background:linear-gradient(135deg,#00aaff,#0066ff);
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:22px;
+}
 
-    .card p {
-      color: #6b7280;
-      margin-bottom: 22px;
-      font-size: 1.05rem;
-    }
+.header h2{margin:0;font-weight:600;}
+.header p{margin:0;font-size:13px;opacity:.8;}
 
-    .upload-box {
-      border: 2px dashed #a084ee;
-      border-radius: 14px;
-      background: #f7f8fd;
-      padding: 24px 20px;
-      margin: 18px 0;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      cursor: pointer;
-      position: relative;
-      opacity: 0;
-      transform: translateY(20px);
-      animation: fadeUp 0.8s 1s forwards;
-    }
+.divider{
+border:none;
+height:1px;
+background:rgba(255,255,255,0.15);
+margin:18px 0 22px 0;
+}
 
-    .upload-box:hover {
-      box-shadow: 0 8px 25px rgba(160, 132, 238, 0.15);
-      border-color: #7f53ac;
-      background: #f0f4ff;
-      transform: translateY(-2px);
-    }
+label{font-size:14px;opacity:.9;display:block;margin-top:10px;}
 
-    .upload-box:nth-child(2) {
-      animation-delay: 1.2s;
-    }
+/* HIDDEN INPUT */
 
-    .upload-box input[type="file"] {
-      display: none;
-    }
+input[type=file]{
+display:none;
+}
 
-    .upload-label {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      color: #7f53ac;
-      font-weight: 500;
-      font-size: 1.05rem;
-      cursor: pointer;
-      transition: transform 0.2s;
-    }
+/* EXCEL BUTTON */
 
-    .upload-label:hover {
-      transform: scale(1.02);
-    }
+.file-btn{
+display:flex;
+align-items:center;
+gap:10px;
+background:rgba(255,255,255,0.08);
+padding:12px 14px;
+border-radius:10px;
+cursor:pointer;
+margin-top:6px;
+transition:.25s;
+border:1px solid rgba(255,255,255,0.1);
+}
 
-    .upload-icon {
-      width: 48px;
-      height: 48px;
-      margin-bottom: 12px;
-      padding: 12px;
-      background: linear-gradient(135deg, #a084ee, #7f53ac);
-      border-radius: 50%;
-      color: white;
-      transition: transform 0.3s;
-    }
+.file-btn:hover{
+background:rgba(255,255,255,0.18);
+transform:translateY(-2px);
+}
 
-    .upload-box:hover .upload-icon {
-      transform: rotateY(180deg) scale(1.1);
-    }
+.file-btn img{
+width:24px;
+}
 
-    .upload-title {
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
+.file-name{
+font-size:13px;
+opacity:.8;
+}
 
-    .upload-subtitle {
-      font-size: 0.9rem;
-      color: #888;
-      opacity: 0.8;
-    }
 
-    .button {
-      background: linear-gradient(135deg, #7f53ac, #647dee, #6a8dff);
-      background-size: 200% 200%;
-      color: #fff;
-      border: none;
-      border-radius: 12px;
-      padding: 16px 0;
-      width: 100%;
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-top: 28px;
-      cursor: pointer;
-      box-shadow: 0 4px 15px rgba(100, 125, 222, 0.15);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      opacity: 0;
-      transform: translateY(20px);
-      animation: fadeUp 0.8s 1.5s forwards;
-      position: relative;
-      overflow: hidden;
-    }
+/* SELECT */
 
-    .button:hover {
-      background-position: 100% 0;
-      transform: translateY(-2px) scale(1.02);
-      box-shadow: 0 8px 25px rgba(100, 125, 222, 0.25);
-    }
+.select-modern{
+width:100%;
+padding:11px;
+border-radius:8px;
+border:none;
+background:rgba(255,255,255,0.12);
+color:white;
+font-size:14px;
+margin-top:6px;
+cursor:pointer;
+}
 
-    .button:active {
-      transform: translateY(0) scale(0.98);
-    }
+.select-modern option{
+background:#0f2433;
+color:white;
+}
 
-    .button::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-      transition: left 0.5s;
-    }
+/* BUTTON */
 
-    .button:hover::before {
-      left: 100%;
-    }
+.btn-modern{
+margin-top:20px;
+width:100%;
+padding:13px;
+border:none;
+border-radius:9px;
+font-size:15px;
+font-weight:600;
+background:linear-gradient(135deg,#1aa3ff,#0066ff);
+color:white;
+cursor:pointer;
+transition:.25s;
+}
 
-    /* Responsive */
-    @media (max-width: 600px) {
-      .card {
-        max-width: 98vw;
-        padding: 18px 4vw 18px 4vw;
-      }
-    }
-  </style>
+.btn-modern:hover{
+transform:translateY(-2px);
+box-shadow:0 8px 25px rgba(0,140,255,0.45);
+}
+
+#durum{
+margin-top:12px;
+font-size:13px;
+opacity:.9;
+}
+
+@keyframes fadeIn{
+from{opacity:0;transform:translateY(10px);}
+to{opacity:1;transform:translateY(0);}
+}
+
+</style>
+
 </head>
 
 <body>
-  <div class="card">
-    <div class="badge">✨ Excel İşleyici</div>
-    <h1>PIP Plan Hesaplama Aracı</h1>
-    <p>Excel dosyalarınızı yükleyip otomatik hesaplama yapın</p>
 
-    <div class="upload-section">
-      <div class="upload-box" id="upload1" onclick="document.getElementById('file1').click()">
-        <label class="upload-label">
-          <div class="upload-icon">📁</div>
-          <div class="upload-text">EX_STOK Dosyasını Yükle</div>
-          <div class="upload-hint">Dosya seçmek için tıklayın (.xlsx, .xls)</div>
-          <div class="file-name" id="filename1"
-            style="display: none; margin-top: 8px; color: #10b981; font-weight: 600; font-size: 0.9rem;"></div>
-        </label>
-        <input type="file" id="file1" accept=".xlsx,.xls" onchange="showSelectedFile(this, 'filename1', 'upload1')"
-          style="display: none;">
-      </div>
+<div class="panel">
 
-      <div class="upload-box" id="upload2" onclick="document.getElementById('file2').click()">
-        <label class="upload-label">
-          <div class="upload-icon">📁</div>
-          <div class="upload-text">İndirdiğiniz Guncel_Plan.xlsx Dosyasını Yükle</div>
-          <div class="upload-hint">Dosya seçmek için tıklayın (.xlsx, .xlsm)</div>
-          <div class="file-name" id="filename2"
-            style="display: none; margin-top: 8px; color: #10b981; font-weight: 600; font-size: 0.9rem;"></div>
-        </label>
-        <input type="file" id="file2" accept=".xlsx,.xlsm" onchange="showSelectedFile(this, 'filename2', 'upload2')"
-          style="display: none;">
-      </div>
+<div class="header">
+<div class="header-icon">⚙</div>
+<div>
+<h2>Montaj Program</h2>
+<p>Excel montaj planını otomatik güncelle</p>
+</div>
+</div>
 
-      <button type="button" class="button" onclick="convert()">🚀 İŞLEMİ BAŞLAT</button>
-    </div>
-  </div>
+<hr class="divider">
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
-  <script>
-    function showSelectedFile(input, filenameId, uploadBoxId) {
-      const filenameDiv = document.getElementById(filenameId);
-      const uploadBox = document.getElementById(uploadBoxId);
-      const uploadHint = uploadBox.querySelector('.upload-hint');
+<label>EX_STOK.xlsx</label>
+<label class="file-btn">
+<img src="https://upload.wikimedia.org/wikipedia/commons/7/73/Microsoft_Excel_2013-2019_logo.svg">
+<span class="file-name" id="stokText">Excel dosyası seç</span>
+<input type="file" id="stok" onchange="fileName('stok','stokText')">
+</label>
 
-      if (input.files && input.files[0]) {
-        const fileName = input.files[0].name;
-        filenameDiv.textContent = `✅ ${fileName}`;
-        filenameDiv.style.display = 'block';
-        uploadHint.style.display = 'none';
-        uploadBox.style.borderColor = '#10b981';
-        uploadBox.style.backgroundColor = '#f0fdf4';
-      }
-    }
+<label>EX_URETIM2.xlsx</label>
+<label class="file-btn">
+<img src="https://upload.wikimedia.org/wikipedia/commons/7/73/Microsoft_Excel_2013-2019_logo.svg">
+<span class="file-name" id="uretimText">Excel dosyası seç</span>
+<input type="file" id="uretim" onchange="fileName('uretim','uretimText')">
+</label>
 
-    async function readFile(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = e => {
-          const data = new Uint8Array(e.target.result);
-          const workbook = XLSX.read(data, { type: 'array' });
-          resolve(workbook);
-        };
-        reader.onerror = err => reject(err);
-        reader.readAsArrayBuffer(file);
-      });
-    }
+<label>MONTAJ_PROGRAM_OLUSTUR.xlsm</label>
+<label class="file-btn">
+<img src="https://upload.wikimedia.org/wikipedia/commons/7/73/Microsoft_Excel_2013-2019_logo.svg">
+<span class="file-name" id="montajText">Excel dosyası seç</span>
+<input type="file" id="montaj" onchange="fileName('montaj','montajText')">
+</label>
 
-    function toText(val) {
-      return String(val || '').trim().toUpperCase();
-    }
+<label>Gün sıralaması</label>
 
-    function convert() {
-      const file1 = document.getElementById('file1').files[0];
-      const file2 = document.getElementById('file2').files[0];
+<select id="gun" class="select-modern">
+<option value="BUGUN,CUMARTESİ,PAZAR,PAZARTESİ,SALI,ÇARŞAMBA,PERŞEMBE">BUGUN,CUMARTESİ,PAZAR</option>
+<option value="BUGUN,PAZAR,PAZARTESİ,SALI,ÇARŞAMBA,PERŞEMBE,CUMA">BUGUN,PAZAR,PAZARTESİ</option>
+<option value="BUGUN,PAZARTESİ,SALI,ÇARŞAMBA,PERŞEMBE,CUMA,CUMARTESİ">BUGUN,PAZARTESİ,SALI</option>
+<option value="BUGUN,SALI,ÇARŞAMBA,PERŞEMBE,CUMA,CUMARTESİ,PAZAR">BUGUN,SALI,ÇARŞAMBA</option>
+<option value="BUGUN,ÇARŞAMBA,PERŞEMBE,CUMA,CUMARTESİ,PAZAR,PAZARTESİ">BUGUN,ÇARŞAMBA,PERŞEMBE</option>
+<option value="BUGUN,PERŞEMBE,CUMA,CUMARTESİ,PAZAR,PAZARTESİ,SALI">BUGUN,PERŞEMBE,CUMA</option>
+<option value="BUGUN,CUMA,CUMARTESİ,PAZAR,PAZARTESİ,SALI,ÇARŞAMBA">BUGUN,CUMA,CUMARTESİ</option>
+</select>
 
-      if (!file1 || !file2) {
-        alert('Lütfen her iki dosyayı da seçin!');
-        return;
-      }
+<button type="button" class="btn-modern" onclick="baslat()">
+✨ Dönüştür
+</button>
 
-      Promise.all([readFile(file1), readFile(file2)]).then(([stokWB, planWB]) => {
-        const stokSheet = XLSX.utils.sheet_to_json(stokWB.Sheets[stokWB.SheetNames[0]]);
-        const planSheet = XLSX.utils.sheet_to_json(planWB.Sheets[planWB.SheetNames[0]], { defval: "" });
+<p id="durum"></p>
 
-        const stoklar = {};
-        stokSheet.forEach(row => {
-          const nokta = toText(row["SORGULAMA_NOKTASI"]);
-          if (nokta === "DIZGI" || nokta === "YEDEK") {
-            const kod = toText(row["SASI_KODU_3"]);
-            const adet = Number(row["ADET"]) || 0;
-            stoklar[kod] = (stoklar[kod] || 0) + adet;
-          }
-        });
+</div>
 
-        const updated = planSheet.map(row => ({ ...row }));
+<script>
 
-        Object.entries(stoklar).forEach(([kod3, adet]) => {
-          const ilgili = updated
-            .map((r, i) => ({ ...r, _idx: i }))
-            .filter(r => toText(Object.values(r)[4]).startsWith(kod3) && Number(r["PLAN"]) > 0);
+function fileName(inputId,textId){
+const file=document.getElementById(inputId).files[0]
+if(file){
+document.getElementById(textId).innerText="✓ "+file.name
+}
+}
 
-          for (const row of ilgili) {
-            const index = row._idx;
-            const planAdet = Number(updated[index]["PLAN"]) || 0;
-            if (adet <= 0) break;
-            if (planAdet <= adet) {
-              adet -= planAdet;
-              updated[index]["PLAN"] = 0;
-            } else {
-              updated[index]["PLAN"] = planAdet - adet;
-              adet = 0;
-            }
-          }
-        });
+function first3(v){
+if(!v) return ""
+return v.toString().substring(0,3)
+}
 
-        const header = Object.keys(updated[0]);
-        const aoa = [header];
-        updated.forEach(row => {
-          aoa.push(header.map(h => row[h]));
-        });
+async function readExcel(file){
+const data = await file.arrayBuffer()
+const wb = XLSX.read(data)
+const ws = wb.Sheets[wb.SheetNames[0]]
+return XLSX.utils.sheet_to_json(ws,{defval:0})
+}
 
-        const ws = XLSX.utils.aoa_to_sheet(aoa);
-        const range = XLSX.utils.decode_range(ws['!ref']);
+async function baslat(){
 
-        for (let R = range.s.r; R <= range.e.r; ++R) {
-          for (let C = range.s.c; C <= range.e.c; ++C) {
-            const cellRef = XLSX.utils.encode_cell({ r: R, c: C });
-            const cell = ws[cellRef];
-            if (!cell.s) cell.s = {};
-            cell.s.font = { sz: 8 }; // Font boyutu 8
+document.getElementById("durum").innerText="Dosyalar okunuyor..."
 
-            cell.s.border = {
-              top: { style: "thin", color: { rgb: "000000" } },
-              bottom: { style: "thin", color: { rgb: "000000" } },
-              left: { style: "thin", color: { rgb: "000000" } },
-              right: { style: "thin", color: { rgb: "000000" } },
-            };
+const stokFile=document.getElementById("stok").files[0]
+const uretimFile=document.getElementById("uretim").files[0]
+const montajFile=document.getElementById("montaj").files[0]
 
-            if (C === 4) {
-              cell.s.fill = { fgColor: { rgb: "CCFFFF" } };
-            }
-            if (C === 9) {
-              cell.s.fill = { fgColor: { rgb: "CCFFCC" } };
-            }
-          }
-        }
+if(!stokFile || !uretimFile || !montajFile){
+alert("3 Excel dosyasını seçmelisiniz")
+return
+}
 
-        const wbOut = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wbOut, ws, "q1");
-        XLSX.writeFile(wbOut, "PIP_PLAN.xlsx");
-      });
-    }
-  </script>
+const stok=await readExcel(stokFile)
+const uretim=await readExcel(uretimFile)
+
+let stokMap={}
+
+stok.forEach(r=>{
+if(r.SORGULAMA_NOKTASI=="AYAR" || r.SORGULAMA_NOKTASI=="MONTAJ" || r.SORGULAMA_NOKTASI=="DIZGI" || r.SORGULAMA_NOKTASI=="DIZTAM" || r.SORGULAMA_NOKTASI=="MONTAM"){
+let kod=first3(r.SASI_KODU)
+stokMap[kod]=(stokMap[kod]||0)+Number(r.ADETLER)
+}
+})
+
+uretim.forEach(r=>{
+let kod=first3(r.SASI_KODU)
+stokMap[kod]=(stokMap[kod]||0)+Number(r.ADETLER)
+})
+
+document.getElementById("durum").innerText="Montaj dosyası okunuyor..."
+
+const data=await montajFile.arrayBuffer()
+const wb=XLSX.read(data)
+const ws=wb.Sheets["MONTAJPROGRAM"]
+
+let rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:""})
+
+rows = rows.filter(r => r.some(c => c !== ""))
+
+let header = rows[0]
+
+let sasiCol = header.findIndex(h=>String(h).toUpperCase().includes("SASI"))
+let planCol = header.findIndex(h=>String(h).toUpperCase().includes("PLAN"))
+let gunCol  = header.findIndex(h=>String(h).toUpperCase().includes("GÜN"))
+
+const days=["BUGUN","PAZARTESİ","SALI","ÇARŞAMBA","PERŞEMBE","CUMA","CUMARTESİ","PAZAR"]
+
+let start=document.getElementById("gun").value.split(",")
+let order=[...start]
+
+days.forEach(d=>{
+if(!order.includes(d)) order.push(d)
+})
+
+let dataRows = rows.slice(1)
+
+dataRows.sort((a,b)=>{
+return order.indexOf(a[gunCol]) - order.indexOf(b[gunCol])
+})
+
+dataRows.forEach(r=>{
+
+let kod=first3(r[sasiCol])
+let plan=Number(r[planCol])||0
+let stok=stokMap[kod]||0
+
+if(stok<=0) return
+
+if(stok>=plan){
+stokMap[kod]-=plan
+r[planCol]=0
+}else{
+r[planCol]=plan-stok
+stokMap[kod]=0
+}
+
+})
+
+dataRows = dataRows.filter(r => Number(r[planCol]) !== 0)
+
+rows=[header,...dataRows]
+
+let removeCols=[6,5,3,1]
+
+removeCols.forEach(col=>{
+rows.forEach(r=>{
+r.splice(col,1)
+})
+})
+
+let colCount=rows[0].length
+
+for(let c=colCount-1;c>=0;c--){
+
+let empty=true
+
+for(let r=0;r<rows.length;r++){
+if(rows[r][c]!=="" && rows[r][c]!=null){
+empty=false
+break
+}
+}
+
+if(empty){
+rows.forEach(row=>row.splice(c,1))
+}
+
+}
+
+const newWs=XLSX.utils.aoa_to_sheet(rows)
+
+for(let r=0;r<rows.length;r++){
+
+let rowIndex=r+1
+
+for(let c=0;c<rows[0].length;c++){
+
+let colLetter=XLSX.utils.encode_col(c)
+let cellRef=colLetter+rowIndex
+
+if(!newWs[cellRef]) continue
+
+let style={
+font:{name:"Calibri",sz:9,color:{rgb:"000000"}}
+}
+
+if(["A","D","E","H","J"].includes(colLetter)){
+style.font.color={rgb:"808080"}
+}
+
+if(colLetter==="K"){
+style.font.color={rgb:"000080"}
+}
+
+if(colLetter==="B"){
+style.fill={fgColor:{rgb:"AFEEEE"}}
+}
+
+newWs[cellRef].s=style
+
+}
+
+}
+
+let cols=[]
+
+for(let c=0;c<rows[0].length;c++){
+
+let max=0
+
+for(let r=0;r<rows.length;r++){
+
+let val=rows[r][c]
+
+if(val){
+max=Math.max(max,val.toString().length)
+}
+
+}
+
+let width=Math.max(max+2,9)
+
+cols.push({wch:width})
+
+}
+
+newWs["!cols"]=cols
+
+newWs["!freeze"]={xSplit:0,ySplit:1}
+
+newWs["!autofilter"] = { ref: XLSX.utils.encode_range({
+s:{r:0,c:0},
+e:{r:rows.length-1,c:rows[0].length-1}
+}) }
+
+const newWb=XLSX.utils.book_new()
+XLSX.utils.book_append_sheet(newWb,newWs,"MONTAJPROGRAM")
+
+XLSX.writeFile(newWb,"MONTAJ_PROGRAM_GUNCEL.xlsx")
+
+document.getElementById("durum").innerText="Tamamlandı"
+
+}
+
+</script>
+
+</body>
+</html>
